@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<style>
+@font-face{font-family:CG;font-weight:500;src:url(../node_modules/@fontsource/cormorant-garamond/files/cormorant-garamond-cyrillic-500-normal.woff2)}
+@font-face{font-family:CG;font-weight:600;src:url(../node_modules/@fontsource/cormorant-garamond/files/cormorant-garamond-cyrillic-600-normal.woff2)}
+@font-face{font-family:CG;font-weight:700;src:url(../node_modules/@fontsource/cormorant-garamond/files/cormorant-garamond-cyrillic-700-normal.woff2)}
+@font-face{font-family:CG;font-weight:500;font-style:italic;src:url(../node_modules/@fontsource/cormorant-garamond/files/cormorant-garamond-cyrillic-500-italic.woff2)}
+@font-face{font-family:CG;font-weight:600;font-style:italic;src:url(../node_modules/@fontsource/cormorant-garamond/files/cormorant-garamond-cyrillic-600-italic.woff2)}
+@font-face{font-family:CSC;font-weight:600;src:url(../node_modules/@fontsource/cormorant-sc/files/cormorant-sc-cyrillic-600-normal.woff2)}
+@font-face{font-family:CSC;font-weight:700;src:url(../node_modules/@fontsource/cormorant-sc/files/cormorant-sc-cyrillic-700-normal.woff2)}
+html,body{margin:0;background:#000}
+#stage{position:relative;width:1080px;height:1920px;overflow:hidden;background:#0d0906;font-family:CG,serif}
+#stage *{position:absolute}
+#wall{left:0;top:0;width:1080px;height:1920px}
+#cam{left:0;top:0;width:3000px;height:1920px;transform-origin:0 0;will-change:transform}
+#relief{left:0;top:0;width:3000px;height:1920px;box-shadow:0 0 0 6px #1a120a,0 40px 160px 60px rgba(0,0,0,.85)}
+.glow{border-radius:50%;mix-blend-mode:screen;pointer-events:none}
+#sunGlow{left:0;top:-100px;width:1200px;height:1200px;background:radial-gradient(circle,rgba(255,214,130,.95) 0%,rgba(255,160,50,.55) 22%,rgba(255,120,20,.18) 45%,transparent 66%)}
+#sunRays{left:-200px;top:-300px;width:1600px;height:1600px;border-radius:50%;mix-blend-mode:screen;
+  background:repeating-conic-gradient(from 0deg,rgba(255,190,90,.34) 0deg 6deg,transparent 6deg 22.5deg);
+  -webkit-mask-image:radial-gradient(circle,transparent 12%,#000 20%,transparent 68%);mask-image:radial-gradient(circle,transparent 12%,#000 20%,transparent 68%)}
+#vatGlow{left:1120px;top:770px;width:1000px;height:1000px;background:radial-gradient(circle,rgba(255,206,110,.9) 0%,rgba(255,160,50,.45) 24%,rgba(255,120,20,.14) 46%,transparent 66%)}
+#starGlow{left:890px;top:70px;width:800px;height:800px;background:radial-gradient(circle,rgba(255,236,190,.95) 0%,rgba(255,190,100,.4) 22%,transparent 62%)}
+#starRays{left:590px;top:-230px;width:1400px;height:1400px;border-radius:50%;mix-blend-mode:screen;
+  background:repeating-conic-gradient(from 11deg,rgba(255,226,170,.30) 0deg 5deg,transparent 5deg 22.5deg);
+  -webkit-mask-image:radial-gradient(circle,transparent 8%,#000 16%,transparent 66%);mask-image:radial-gradient(circle,transparent 8%,#000 16%,transparent 66%)}
+#vesselGlow{left:2000px;top:740px;width:800px;height:800px;background:radial-gradient(circle,rgba(255,206,110,.85) 0%,rgba(255,160,50,.35) 26%,transparent 62%)}
+.halo{width:520px;height:520px;top:700px;background:radial-gradient(circle,rgba(255,222,150,.75) 0%,rgba(255,170,70,.28) 34%,transparent 64%)}
+#haloL{left:1806px}#haloR{left:2474px}
+#skyGlow{left:0;top:0;width:3000px;height:1920px;mix-blend-mode:screen;background:linear-gradient(to bottom,rgba(255,210,130,.75),rgba(255,170,70,.25) 45%,transparent 80%)}
+#fx,#straws{left:0;top:0;width:3000px;height:1920px;mix-blend-mode:screen}
+#dust{left:0;top:0;mix-blend-mode:screen}
+#vig{left:0;top:0;width:1080px;height:1920px;background:radial-gradient(ellipse 75% 62% at 50% 46%,transparent 48%,rgba(4,2,1,.55) 78%,rgba(4,2,1,.9) 100%)}
+#botGrad{left:0;bottom:0;width:1080px;height:760px;background:linear-gradient(to top,rgba(8,5,3,.96) 0%,rgba(8,5,3,.82) 38%,rgba(8,5,3,0) 100%)}
+#topGrad{left:0;top:0;width:1080px;height:420px;background:linear-gradient(to bottom,rgba(8,5,3,.9) 0%,rgba(8,5,3,0) 100%)}
+.gold{background:linear-gradient(180deg,#fbe6b0 0%,#e7bb68 48%,#b98432 100%);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 3px 10px rgba(0,0,0,.85))}
+#label{left:0;top:150px;width:1080px;text-align:center;font-family:CSC;font-weight:600;font-size:38px;letter-spacing:.34em;color:#e3bd75;text-shadow:0 2px 10px rgba(0,0,0,.9)}
+#label::before,#label::after{content:"";position:absolute;top:24px;width:150px;height:2px;background:linear-gradient(90deg,transparent,#c99a4a)}
+#label::before{left:60px}#label::after{right:60px;transform:scaleX(-1)}
+#title{left:0;top:250px;width:1080px;height:340px;text-align:center}
+#title .act{left:0;top:0;width:1080px;font-family:CSC;font-weight:600;font-size:50px;letter-spacing:.5em;text-indent:.5em;color:#d9b36b;text-shadow:0 2px 10px #000}
+#title .name{left:0;top:62px;width:1080px;font-weight:700;font-size:128px;letter-spacing:.03em;line-height:1.1}
+#title .rule{left:290px;top:226px;width:500px;height:2px;background:linear-gradient(90deg,transparent,#d2a55a 30%,#d2a55a 70%,transparent)}
+#title .diamond{left:530px;top:217px;width:18px;height:18px;transform:rotate(45deg);background:#e2b869}
+#title .place{left:0;top:254px;width:1080px;font-style:italic;font-weight:500;font-size:50px;color:#efe0c2;text-shadow:0 2px 10px #000}
+#cap{left:70px;width:940px;bottom:300px;text-align:center;font-weight:600;font-size:64px;line-height:1.16;color:#f6ead2;text-shadow:0 2px 6px rgba(0,0,0,.95),0 0 26px rgba(0,0,0,.9)}
+#big{left:0;top:225px;width:1080px;text-align:center}
+#big .w{left:0;top:0;width:1080px;white-space:nowrap;font-family:CSC;font-weight:700;font-size:70px;letter-spacing:.06em}
+#big .s{left:0;top:100px;width:1080px;font-style:italic;font-weight:600;font-size:52px;color:#f2e4c6;text-shadow:0 2px 12px #000}
+#end{left:0;top:0;width:1080px;height:1920px;background:radial-gradient(ellipse 80% 50% at 50% 46%,rgba(120,78,26,.55),rgba(14,9,5,.96) 70%),#0d0906}
+#end .wallimg{left:0;top:0;width:1080px;height:1920px;opacity:.5;mix-blend-mode:overlay}
+#end svg{left:440px;top:560px;width:200px;height:200px}
+#end .t1{left:0;top:790px;width:1080px;text-align:center;font-weight:700;font-size:158px;letter-spacing:.05em;line-height:1.1}
+#end .rule{left:240px;top:1000px;width:600px;height:3px;background:linear-gradient(90deg,transparent,#d2a55a 25%,#d2a55a 75%,transparent)}
+#end .t2{left:60px;top:1040px;width:960px;text-align:center;font-style:italic;font-weight:600;font-size:64px;line-height:1.2;color:#f4e6c8;text-shadow:0 2px 12px #000}
+#black{left:0;top:0;width:1080px;height:1920px;background:#000}
+</style>
+</head>
+<body>
+<div id="stage">
+  <img id="wall" src="../build/wall.jpg">
+  <div id="cam">
+    <img id="relief" src="../build/relief.jpg">
+    <div id="skyGlow"></div>
+    <div id="sunRays"></div>
+    <div id="sunGlow" class="glow"></div>
+    <div id="starRays"></div>
+    <div id="starGlow" class="glow"></div>
+    <div id="vatGlow" class="glow"></div>
+    <div id="vesselGlow" class="glow"></div>
+    <div id="haloL" class="glow halo"></div>
+    <div id="haloR" class="glow halo"></div>
+    <svg id="straws" viewBox="0 0 3000 1920">
+      <defs><filter id="sg" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="9" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+      <g filter="url(#sg)" stroke="#ffd27a" stroke-width="9" stroke-linecap="round" fill="none">
+        <line id="st1" x1="2372" y1="1150" x2="2126" y2="982"/>
+        <line id="st2" x1="2428" y1="1150" x2="2674" y2="982"/>
+      </g>
+    </svg>
+    <canvas id="fx" width="3000" height="1920"></canvas>
+  </div>
+  <canvas id="dust" width="1080" height="1920"></canvas>
+  <div id="vig"></div>
+  <div id="topGrad"></div>
+  <div id="botGrad"></div>
+  <div id="label">ТЕАТР ПИВА · АКТ I</div>
+  <div id="title">
+    <div class="act">АКТ I</div>
+    <div class="name gold">ДАР НИНКАСИ</div>
+    <div class="rule"></div><div class="diamond"></div>
+    <div class="place">Месопотамия · IV тыс. до н. э.</div>
+  </div>
+  <div id="big"><div class="w gold">ВЕЛИКИЙ УРАВНИТЕЛЬ</div><div class="s">знак мира и доверия</div></div>
+  <div id="cap"></div>
+  <div id="end">
+    <img class="wallimg" src="../build/wall.jpg">
+    <svg viewBox="-100 -100 200 200"><g fill="#e2b869"><polygon id="estar"/><circle r="15" fill="#0d0906"/><circle r="8"/></g></svg>
+    <div class="t1 gold">ТЕАТР ПИВА</div>
+    <div class="rule"></div>
+    <div class="t2">Здесь пиво становится искусством</div>
+  </div>
+  <div id="black"></div>
+</div>
+<script>
+const FPS = 30, DUR = 59.5;
+const $ = (id) => document.getElementById(id);
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const ease = (x) => { x = clamp(x); return x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; };
+const lerp = (a, b, k) => a + (b - a) * k;
+// плавное окно: 0 -> 1 на [a, a+fi], удержание, 1 -> 0 на [b-fo, b]
+const win = (t, a, b, fi = 0.4, fo = 0.4) => clamp((t - a) / fi) * clamp((b - t) / fo);
+const hash = (i, k) => { const x = Math.sin(i * 127.1 + k * 311.7) * 43758.5453; return x - Math.floor(x); };
+
+// ---- камера: [время, cx, cy, масштаб] ----
+const CAM = [
+  [0.0, 1500, 960, 0.345],
+  [5.2, 1500, 960, 0.36],
+  [6.5, 600, 780, 1.2],     // пылающее солнце
+  [8.0, 600, 760, 1.26],
+  [9.3, 600, 1300, 1.08],   // ступенчатый зиккурат
+  [11.6, 600, 880, 0.98],   // ...уходящий в самое небо
+  [12.6, 1420, 1010, 0.98], // жрица
+  [15.6, 1380, 930, 1.22],
+  [16.8, 1480, 1050, 1.42], // весло-мешалка
+  [19.1, 1500, 1080, 1.48],
+  [20.3, 1620, 1400, 1.4],  // глиняный чан
+  [22.5, 1620, 1380, 1.46],
+  [23.6, 1540, 1060, 1.02], // магия
+  [24.7, 1540, 1040, 1.0],
+  [25.7, 1620, 1330, 1.55], // брожение
+  [27.2, 1620, 1310, 1.62],
+  [28.6, 1480, 760, 1.12],  // божественное чудо
+  [30.3, 1470, 720, 1.16],
+  [31.7, 2400, 1080, 0.98], // пирующие
+  [33.2, 2400, 1080, 1.04],
+  [34.6, 2400, 1070, 1.34], // трубки
+  [36.8, 2400, 1090, 1.38],
+  [38.0, 2140, 1010, 1.62], // царь
+  [39.0, 2150, 1010, 1.66],
+  [39.8, 2660, 1010, 1.66], // слуга
+  [40.4, 2650, 1010, 1.62],
+  [42.4, 2400, 935, 1.02], // великий уравнитель
+  [46.3, 2400, 935, 1.07],
+  [47.4, 2400, 1300, 1.36], // один сосуд
+  [48.2, 2400, 1310, 1.38],
+  [49.2, 2400, 1700, 1.16], // сложенное оружие
+  [49.9, 2400, 1705, 1.17],
+  [51.8, 1500, 960, 0.35],  // дар небес — общий план
+  [55.4, 1500, 960, 0.385],
+  [60, 1500, 960, 0.39],
+];
+function cam(t) {
+  let i = 0;
+  while (i < CAM.length - 2 && t >= CAM[i + 1][0]) i++;
+  const a = CAM[i], b = CAM[i + 1];
+  const k = ease((t - a[0]) / (b[0] - a[0]));
+  // масштаб интерполируем в логарифмах — движение ровнее
+  return [lerp(a[1], b[1], k), lerp(a[2], b[2], k), Math.exp(lerp(Math.log(a[3]), Math.log(b[3]), k))];
+}
+
+// ---- субтитры (по таймингу слов озвучки) ----
+const CAPS = [
+  [0.0, 1.95, 'Взгляните на этот рельеф.'],
+  [2.5, 5.0, 'Перед нами — утро человечества.'],
+  [5.5, 6.45, 'Междуречье.'],
+  [6.66, 7.95, 'Пылающее солнце'],
+  [7.95, 9.72, 'и ступенчатый зиккурат,'],
+  [9.78, 11.65, 'уходящий в самое небо.'],
+  [12.0, 13.88, 'Жрица великой богини Нинкаси'],
+  [13.88, 15.62, 'совершает священнодействие.'],
+  [15.84, 17.0, 'В её руках —'],
+  [17.26, 19.12, 'простое деревянное весло-мешалка,'],
+  [19.28, 20.95, 'но в глиняном чане кипит'],
+  [20.95, 22.46, 'не просто зерно с водой —'],
+  [22.7, 24.6, 'там рождается магия.'],
+  [24.64, 27.18, 'Древние шумеры не знали химии брожения —'],
+  [27.34, 28.82, 'для них это было явлением'],
+  [28.82, 30.24, 'божественного чуда.'],
+  [30.62, 31.64, 'Обратите внимание:'],
+  [31.94, 33.04, 'люди пьют напиток'],
+  [33.04, 35.18, 'через длинные тростниковые трубки'],
+  [35.18, 36.68, 'из единого сосуда.'],
+  [37.08, 39.84, 'В этом жесте нет деления на царей и слуг.'],
+  [40.16, 42.52, 'Пиво с первого дня своего существования'],
+  [42.52, 44.44, 'стало великим уравнителем,'],
+  [44.6, 46.18, 'знаком мира и доверия.'],
+  [46.6, 48.12, 'Разделив один сосуд,'],
+  [48.36, 49.7, 'люди складывали оружие.'],
+  [49.7, 52.24, 'Это был священный дар небес,'],
+  [52.42, 54.82, 'дарующий радость усталому сердцу.'],
+];
+
+// звезда на финальной заставке
+(() => {
+  const p = [];
+  for (let i = 0; i < 16; i++) { const a = i * Math.PI / 8 - Math.PI / 2, r = i % 2 ? 32 : 92; p.push((Math.cos(a) * r).toFixed(1) + ',' + (Math.sin(a) * r).toFixed(1)); }
+  $('estar').setAttribute('points', p.join(' '));
+})();
+
+const fx = $('fx').getContext('2d');
+const dust = $('dust').getContext('2d');
+const STRAW_LEN = Math.hypot(246, 168);
+for (const id of ['st1', 'st2']) $(id).setAttribute('stroke-dasharray', STRAW_LEN);
+
+function spark(ctx, x, y, r, a, col = '255,205,120') {
+  if (a <= 0.01) return;
+  const g = ctx.createRadialGradient(x, y, 0, x, y, r * 4);
+  g.addColorStop(0, `rgba(255,244,214,${a})`);
+  g.addColorStop(0.25, `rgba(${col},${a * 0.7})`);
+  g.addColorStop(1, `rgba(${col},0)`);
+  ctx.fillStyle = g;
+  ctx.beginPath(); ctx.arc(x, y, r * 4, 0, 6.2832); ctx.fill();
+}
+
+window.setFrame = (f) => {
+  const t = f / FPS;
+  const flick = 1 + 0.035 * Math.sin(t * 7.3) + 0.025 * Math.sin(t * 13.1 + 1.3) + 0.02 * Math.sin(t * 3.1 + 0.4);
+
+  // камера
+  const [cx, cy, s] = cam(t);
+  $('cam').style.transform = `translate(${(540 - cx * s).toFixed(2)}px,${(960 - cy * s).toFixed(2)}px) scale(${s.toFixed(5)})`;
+
+  const finale = win(t, 49.9, 56.2, 1.6, 1.2);
+
+  // солнце
+  const sun = Math.max(0.16, 0.95 * win(t, 6.2, 9.0, 0.7, 1.2), 0.85 * finale) * flick;
+  $('sunGlow').style.opacity = clamp(sun);
+  $('sunRays').style.opacity = clamp(Math.max(win(t, 6.4, 9.2, 0.8, 1.2), finale * 0.9) * flick);
+  $('sunRays').style.transform = `rotate(${(t * 3).toFixed(3)}deg)`;
+  $('sunRays').style.transformOrigin = '800px 800px';
+
+  // чан
+  const magic = win(t, 22.6, 25.2, 0.5, 0.9);
+  const vat = Math.max(0.14 * clamp((t - 11) / 2), 0.55 * win(t, 19.2, 22.8, 0.8, 0.4), magic, 0.75 * win(t, 24.8, 28.2, 0.4, 1.0), 0.6 * finale) * flick;
+  $('vatGlow').style.opacity = clamp(vat);
+
+  // звезда: божественное чудо
+  const miracle = Math.max(win(t, 27.6, 30.9, 0.9, 0.8), 0.7 * finale, 0.3 * magic);
+  $('starGlow').style.opacity = clamp(miracle * flick);
+  $('starRays').style.opacity = clamp(miracle * 0.9);
+  $('starRays').style.transform = `rotate(${(-t * 4).toFixed(3)}deg)`;
+  $('starRays').style.transformOrigin = '700px 700px';
+
+  // трубки: золото поднимается от сосуда к губам
+  const flow = ease((t - 33.0) / 1.9);
+  const strawA = clamp((t - 32.9) / 0.3) * (t < 46.4 ? 1 : Math.max(0.0, 1 - (t - 46.4) / 1.0)) * (0.82 + 0.18 * Math.sin(t * 5));
+  $('straws').style.opacity = Math.max(strawA, finale * 0.8);
+  const off = t > 49 ? 0 : STRAW_LEN * (1 - flow);
+  $('st1').setAttribute('stroke-dashoffset', off);
+  $('st2').setAttribute('stroke-dashoffset', off);
+  const vessel = Math.max(0.75 * win(t, 34.9, 37.4, 0.6, 0.8), 0.45 * win(t, 40.5, 46.4, 1.2, 0.6), 0.8 * win(t, 46.4, 48.6, 0.5, 0.5), 0.6 * finale) * flick;
+  $('vesselGlow').style.opacity = clamp(vessel);
+  const halo = Math.max(win(t, 42.6, 46.4, 0.7, 0.6) * 0.8, win(t, 37.9, 40.5, 0.5, 0.5) * 0.45);
+  $('haloL').style.opacity = halo; $('haloR').style.opacity = halo;
+
+  $('skyGlow').style.opacity = finale * 0.55;
+
+  // искры (в координатах рельефа)
+  fx.clearRect(0, 0, 3000, 1920);
+  const vatSparks = Math.max(0.35 * win(t, 19.4, 22.8, 1, 0.4), magic, 0.8 * win(t, 24.9, 30.6, 0.3, 1.2), 0.7 * finale);
+  if (vatSparks > 0.01) {
+    for (let i = 0; i < 90; i++) {
+      const p = (t * (0.16 + 0.16 * hash(i, 1)) + hash(i, 2)) % 1;
+      const x = 1620 + (hash(i, 3) - 0.5) * 300 + Math.sin(p * 7 + hash(i, 4) * 6.28) * (30 + 60 * p);
+      const y = 1262 - p * (520 + 420 * hash(i, 5));
+      spark(fx, x, y, 2.6 + 4 * hash(i, 6), Math.sin(Math.PI * p) * vatSparks * (0.5 + 0.5 * hash(i, 7)));
+    }
+  }
+  // пузырьки на пене
+  const boil = Math.max(win(t, 19.2, 28.4, 0.6, 0.8), 0.5 * finale);
+  if (boil > 0.01) {
+    for (let i = 0; i < 26; i++) {
+      const p = (t * (0.7 + 0.9 * hash(i, 11)) + hash(i, 12)) % 1;
+      const x = 1490 + hash(i, 13) * 280, y = 1296 - hash(i, 14) * 60 - p * 26;
+      spark(fx, x, y, 2 + 3.2 * p, Math.sin(Math.PI * p) * 0.55 * boil, '255,232,170');
+    }
+  }
+  // искры из сосуда
+  const vs = Math.max(0.6 * win(t, 34.8, 37.2, 0.6, 0.8), 0.7 * win(t, 42.6, 48.4, 0.8, 0.6), 0.6 * finale);
+  if (vs > 0.01) {
+    for (let i = 0; i < 46; i++) {
+      const p = (t * (0.14 + 0.14 * hash(i, 21)) + hash(i, 22)) % 1;
+      const x = 2400 + (hash(i, 23) - 0.5) * 130 + Math.sin(p * 6 + hash(i, 24) * 6.28) * (20 + 90 * p);
+      const y = 1130 - p * (380 + 360 * hash(i, 25));
+      spark(fx, x, y, 2.4 + 3.4 * hash(i, 26), Math.sin(Math.PI * p) * vs * (0.5 + 0.5 * hash(i, 27)));
+    }
+  }
+  // финал: золотая пыль по всему рельефу
+  if (finale > 0.01) {
+    for (let i = 0; i < 150; i++) {
+      const p = (t * (0.05 + 0.07 * hash(i, 31)) + hash(i, 32)) % 1;
+      const x = 120 + hash(i, 33) * 2760 + Math.sin(p * 5 + i) * 40;
+      const y = 1700 - p * 1500;
+      spark(fx, x, y, 5 + 7 * hash(i, 34), Math.sin(Math.PI * p) * finale * (0.35 + 0.5 * hash(i, 35)));
+    }
+  }
+
+  // пылинки в луче (экранные координаты)
+  dust.clearRect(0, 0, 1080, 1920);
+  for (let i = 0; i < 46; i++) {
+    const x = (hash(i, 41) * 1080 + t * (6 + 10 * hash(i, 42)) + Math.sin(t * 0.5 + i) * 26) % 1080;
+    const y = (hash(i, 43) * 1920 - t * (5 + 12 * hash(i, 44)) + 19200) % 1920;
+    const a = (0.1 + 0.2 * hash(i, 45)) * (0.6 + 0.4 * Math.sin(t * (0.6 + hash(i, 46)) + i * 2.1));
+    spark(dust, x, y, 1.1 + 1.6 * hash(i, 47), a, '255,224,170');
+  }
+
+  // подписи
+  const wide = Math.max(win(t, 0.5, 5.5, 1.0, 0.5), win(t, 51.6, 54.9, 0.7, 0.4));
+  $('title').style.opacity = wide;
+  $('title').style.transform = `translateY(${((1 - ease(clamp((t - 0.5) / 1.4))) * 22).toFixed(2)}px)`;
+  $('label').style.opacity = win(t, 6.3, 51.0, 0.6, 0.6) * (1 - win(t, 42.2, 46.5, 0.4, 0.4));
+  $('topGrad').style.opacity = 0.35 + 0.65 * Math.max(wide, win(t, 42.2, 46.5, 0.4, 0.4));
+
+  const bigA = win(t, 42.7, 46.3, 0.45, 0.4);
+  $('big').style.opacity = bigA;
+  $('big').firstElementChild.style.letterSpacing = (0.05 + 0.03 * clamp((t - 42.7) / 3.6)).toFixed(4) + 'em';
+  $('big').lastElementChild.style.opacity = clamp((t - 44.55) / 0.4);
+
+  let txt = '', a = 0, rise = 0;
+  for (const [st, en, tx] of CAPS) {
+    if (t >= st - 0.04 && t < en + 0.12) {
+      txt = tx; a = clamp((t - st + 0.04) / 0.16) * clamp((en + 0.12 - t) / 0.12); rise = (1 - clamp((t - st + 0.04) / 0.22)) * 10; break;
+    }
+  }
+  const cap = $('cap');
+  if (cap.textContent !== txt) cap.textContent = txt;
+  cap.style.opacity = a;
+  cap.style.transform = `translateY(${rise.toFixed(2)}px)`;
+
+  // финальная заставка
+  const endA = clamp((t - 54.75) / 0.55);
+  const end = $('end');
+  end.style.opacity = endA;
+  end.style.visibility = endA > 0 ? 'visible' : 'hidden';
+  if (endA > 0) {
+    const k1 = ease((t - 54.95) / 0.8), k2 = ease((t - 56.25) / 0.8);
+    const t1 = end.querySelector('.t1'), t2 = end.querySelector('.t2'), rule = end.querySelector('.rule'), sv = end.querySelector('svg');
+    t1.style.opacity = k1; t1.style.transform = `translateY(${((1 - k1) * 26).toFixed(2)}px) scale(${(0.96 + 0.04 * k1 + 0.012 * clamp((t - 55) / 4.5)).toFixed(4)})`;
+    sv.style.opacity = k1; sv.style.transform = `rotate(${((t - 55) * 5).toFixed(3)}deg) scale(${(0.8 + 0.2 * k1).toFixed(4)})`;
+    rule.style.transform = `scaleX(${ease((t - 55.5) / 0.9).toFixed(4)})`;
+    t2.style.opacity = k2; t2.style.transform = `translateY(${((1 - k2) * 18).toFixed(2)}px)`;
+  }
+
+  // проявление из темноты и уход в темноту
+  $('black').style.opacity = Math.max(1 - ease(t / 1.7), clamp((t - (DUR - 0.6)) / 0.55));
+};
+window.ready = Promise.all([document.fonts.ready, ...[...document.images].map((i) => i.decode())]).then(() => { setFrame(0); return true; });
+</script>
+</body>
+</html>
