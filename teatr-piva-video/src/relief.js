@@ -355,6 +355,17 @@ ${el.join('\n')}
   const out = path.join(__dirname, '..', 'build');
   fs.mkdirSync(out, { recursive: true });
   fs.writeFileSync(path.join(out, 'relief.svg'), svg);
+  if (process.env.HEIGHT) {
+    // чистая карта высот (без освещения) для 3D-версии
+    const hsvg = svg.replace('<g filter="url(#relief)">', '<g>');
+    const b2 = await chromium.launch();
+    const pg = await b2.newPage({ viewport: { width: W, height: H }, deviceScaleFactor: 1 });
+    await pg.setContent(`<html><body style="margin:0;background:#000">${hsvg}</body></html>`);
+    await pg.screenshot({ path: path.join(out, 'height_raw.png') });
+    await b2.close();
+    console.log('height ok');
+    return;
+  }
   const scale = Number(process.env.SCALE || 1.5);
   const browser = await chromium.launch();
   const page = await browser.newPage({ viewport: { width: W, height: H }, deviceScaleFactor: scale });

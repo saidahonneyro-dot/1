@@ -1,0 +1,460 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<style>
+@font-face{font-family:CG;font-weight:500;src:url(/node_modules/@fontsource/cormorant-garamond/files/cormorant-garamond-cyrillic-500-normal.woff2)}
+@font-face{font-family:CG;font-weight:600;src:url(/node_modules/@fontsource/cormorant-garamond/files/cormorant-garamond-cyrillic-600-normal.woff2)}
+@font-face{font-family:CG;font-weight:700;src:url(/node_modules/@fontsource/cormorant-garamond/files/cormorant-garamond-cyrillic-700-normal.woff2)}
+@font-face{font-family:CG;font-weight:500;font-style:italic;src:url(/node_modules/@fontsource/cormorant-garamond/files/cormorant-garamond-cyrillic-500-italic.woff2)}
+@font-face{font-family:CG;font-weight:600;font-style:italic;src:url(/node_modules/@fontsource/cormorant-garamond/files/cormorant-garamond-cyrillic-600-italic.woff2)}
+@font-face{font-family:CSC;font-weight:600;src:url(/node_modules/@fontsource/cormorant-sc/files/cormorant-sc-cyrillic-600-normal.woff2)}
+@font-face{font-family:CSC;font-weight:700;src:url(/node_modules/@fontsource/cormorant-sc/files/cormorant-sc-cyrillic-700-normal.woff2)}
+html,body{margin:0;background:#000}
+#stage{position:relative;width:1080px;height:1920px;overflow:hidden;background:#000;font-family:CG,serif}
+#stage *{position:absolute}
+#gl{left:0;top:0;width:1080px;height:1920px}
+#vig{left:0;top:0;width:1080px;height:1920px;background:radial-gradient(ellipse 78% 64% at 50% 46%,transparent 50%,rgba(4,2,1,.45) 80%,rgba(4,2,1,.85) 100%)}
+#botGrad{left:0;bottom:0;width:1080px;height:760px;background:linear-gradient(to top,rgba(6,4,2,.94) 0%,rgba(6,4,2,.74) 36%,rgba(6,4,2,0) 100%)}
+#topGrad{left:0;top:0;width:1080px;height:440px;background:linear-gradient(to bottom,rgba(6,4,2,.9) 0%,rgba(6,4,2,0) 100%)}
+.gold{background:linear-gradient(180deg,#fbe6b0 0%,#e7bb68 48%,#b98432 100%);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 3px 10px rgba(0,0,0,.85))}
+#label{left:0;top:150px;width:1080px;text-align:center;font-family:CSC;font-weight:600;font-size:38px;letter-spacing:.34em;color:#e3bd75;text-shadow:0 2px 10px rgba(0,0,0,.9)}
+#label::before,#label::after{content:"";position:absolute;top:24px;width:150px;height:2px;background:linear-gradient(90deg,transparent,#c99a4a)}
+#label::before{left:60px}#label::after{right:60px;transform:scaleX(-1)}
+#title{left:0;top:215px;width:1080px;height:340px;text-align:center}
+#title .act{left:0;top:0;width:1080px;font-family:CSC;font-weight:600;font-size:50px;letter-spacing:.5em;text-indent:.5em;color:#d9b36b;text-shadow:0 2px 10px #000}
+#title .name{left:0;top:62px;width:1080px;font-weight:700;font-size:128px;letter-spacing:.03em;line-height:1.1}
+#title .rule{left:290px;top:226px;width:500px;height:2px;background:linear-gradient(90deg,transparent,#d2a55a 30%,#d2a55a 70%,transparent)}
+#title .diamond{left:530px;top:217px;width:18px;height:18px;transform:rotate(45deg);background:#e2b869}
+#title .place{left:0;top:254px;width:1080px;font-style:italic;font-weight:500;font-size:50px;color:#efe0c2;text-shadow:0 2px 10px #000}
+#cap{left:70px;width:940px;bottom:300px;text-align:center;font-weight:600;font-size:64px;line-height:1.16;color:#f6ead2;text-shadow:0 2px 6px rgba(0,0,0,.95),0 0 26px rgba(0,0,0,.9)}
+#big{left:0;top:225px;width:1080px;text-align:center}
+#big .w{left:0;top:0;width:1080px;white-space:nowrap;font-family:CSC;font-weight:700;font-size:70px;letter-spacing:.06em}
+#big .s{left:0;top:100px;width:1080px;font-style:italic;font-weight:600;font-size:52px;color:#f2e4c6;text-shadow:0 2px 12px #000}
+#end{left:0;top:0;width:1080px;height:1920px;background:radial-gradient(ellipse 80% 46% at 50% 47%,rgba(10,6,3,.80),rgba(8,5,3,.55) 60%,rgba(6,4,2,.82) 100%)}
+#end svg{left:440px;top:560px;width:200px;height:200px}
+#end .t1{left:0;top:790px;width:1080px;text-align:center;font-weight:700;font-size:158px;letter-spacing:.05em;line-height:1.1}
+#end .rule{left:240px;top:1000px;width:600px;height:3px;background:linear-gradient(90deg,transparent,#d2a55a 25%,#d2a55a 75%,transparent)}
+#end .t2{left:60px;top:1040px;width:960px;text-align:center;font-style:italic;font-weight:600;font-size:64px;line-height:1.2;color:#f4e6c8;text-shadow:0 2px 12px #000}
+#black{left:0;top:0;width:1080px;height:1920px;background:#000}
+</style>
+<script type="importmap">{"imports":{"three":"/node_modules/three/build/three.module.js","three/addons/":"/node_modules/three/examples/jsm/"}}</script>
+</head>
+<body>
+<div id="stage">
+  <canvas id="gl" width="1080" height="1920"></canvas>
+  <div id="vig"></div>
+  <div id="topGrad"></div>
+  <div id="botGrad"></div>
+  <div id="label">ТЕАТР ПИВА · АКТ I</div>
+  <div id="title">
+    <div class="act">АКТ I</div>
+    <div class="name gold">ДАР НИНКАСИ</div>
+    <div class="rule"></div><div class="diamond"></div>
+    <div class="place">Месопотамия · IV тыс. до н. э.</div>
+  </div>
+  <div id="big"><div class="w gold">ВЕЛИКИЙ УРАВНИТЕЛЬ</div><div class="s">знак мира и доверия</div></div>
+  <div id="cap"></div>
+  <div id="end">
+    <svg viewBox="-100 -100 200 200"><g fill="#e2b869"><polygon id="estar"/><circle r="15" fill="#0d0906"/><circle r="8"/></g></svg>
+    <div class="t1 gold">ТЕАТР ПИВА</div>
+    <div class="rule"></div>
+    <div class="t2">Здесь пиво становится искусством</div>
+  </div>
+  <div id="black"></div>
+</div>
+<script type="module">
+import * as THREE from 'three';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+
+const Q = new URLSearchParams(location.search);
+const FPS = 30, DUR = 59.5, W = 1080, H = 1920;
+const $ = (id) => document.getElementById(id);
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const ease = (x) => { x = clamp(x); return x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; };
+const lerp = (a, b, k) => a + (b - a) * k;
+const win = (t, a, b, fi = 0.4, fo = 0.4) => clamp((t - a) / fi) * clamp((b - t) / fo);
+const hash = (i, k) => { const x = Math.sin(i * 127.1 + k * 311.7) * 43758.5453; return x - Math.floor(x); };
+// пиксели рельефа -> координаты сцены (1 ед. = 100 px)
+const PX = (x, y, z = 0) => new THREE.Vector3(x / 100 - 15, 9.6 - y / 100, z);
+
+// ---------- рендерер ----------
+const renderer = new THREE.WebGLRenderer({ canvas: $('gl'), antialias: Q.get('aa') !== '0', preserveDrawingBuffer: true, powerPreference: 'high-performance' });
+renderer.setPixelRatio(1);
+renderer.setSize(W, H, false);
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 0.95;
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x050302);
+scene.fog = new THREE.FogExp2(0x070403, 0.0055);
+const FOV = 30;
+const camera = new THREE.PerspectiveCamera(FOV, W / H, 1, 400);
+
+const loader = new THREE.TextureLoader();
+const tex = (url, srgb, rep) => new Promise((res) => loader.load(url, (t) => {
+  if (srgb) t.colorSpace = THREE.SRGBColorSpace;
+  t.anisotropy = 8;
+  if (rep) { t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(rep[0], rep[1]); }
+  res(t);
+}));
+const img = (url) => new Promise((res) => { const i = new Image(); i.onload = () => res(i); i.src = url; });
+
+// мягкое пятно для частиц и ореолов
+function dotTexture(inner = 0.0) {
+  const c = document.createElement('canvas'); c.width = c.height = 128;
+  const g = c.getContext('2d'); const gr = g.createRadialGradient(64, 64, 0, 64, 64, 64);
+  gr.addColorStop(0, 'rgba(255,255,255,1)'); gr.addColorStop(0.18 + inner, 'rgba(255,255,255,.75)');
+  gr.addColorStop(0.5, 'rgba(255,255,255,.22)'); gr.addColorStop(1, 'rgba(255,255,255,0)');
+  g.fillStyle = gr; g.fillRect(0, 0, 128, 128);
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+}
+function raysTexture(n, w) {
+  const c = document.createElement('canvas'); c.width = c.height = 512;
+  const g = c.getContext('2d'); g.translate(256, 256);
+  for (let i = 0; i < n; i++) {
+    g.rotate((Math.PI * 2) / n);
+    const gr = g.createLinearGradient(0, 0, 0, -256);
+    gr.addColorStop(0, 'rgba(255,255,255,0)'); gr.addColorStop(0.25, 'rgba(255,255,255,.55)'); gr.addColorStop(1, 'rgba(255,255,255,0)');
+    g.fillStyle = gr; g.beginPath(); g.moveTo(-w * 0.2, 0); g.lineTo(-w, -256); g.lineTo(w, -256); g.lineTo(w * 0.2, 0); g.fill();
+  }
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+}
+const DOT = dotTexture();
+
+// ---------- частицы ----------
+class Particles {
+  constructor(n) {
+    this.n = n; this.k = 0;
+    this.pos = new Float32Array(n * 3); this.size = new Float32Array(n); this.col = new Float32Array(n * 4);
+    const g = this.geo = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.BufferAttribute(this.pos, 3));
+    g.setAttribute('aSize', new THREE.BufferAttribute(this.size, 1));
+    g.setAttribute('aColor', new THREE.BufferAttribute(this.col, 4));
+    const m = new THREE.ShaderMaterial({
+      uniforms: { map: { value: DOT }, uScale: { value: H / (2 * Math.tan((FOV * Math.PI) / 360)) } },
+      vertexShader: `attribute float aSize; attribute vec4 aColor; varying vec4 vC; uniform float uScale;
+        void main(){ vC=aColor; vec4 mv=modelViewMatrix*vec4(position,1.0); gl_Position=projectionMatrix*mv; gl_PointSize=min(aSize*uScale/-mv.z, 480.0); }`,
+      fragmentShader: `uniform sampler2D map; varying vec4 vC; void main(){ vec4 t=texture2D(map,gl_PointCoord); gl_FragColor=vec4(vC.rgb*vC.a*t.a,1.0); }`,
+      blending: THREE.AdditiveBlending, depthWrite: false, transparent: true,
+    });
+    this.mesh = new THREE.Points(g, m); this.mesh.frustumCulled = false; scene.add(this.mesh);
+  }
+  begin() { this.k = 0; }
+  add(x, y, z, s, r, g, b, a) {
+    if (a <= 0.004 || this.k >= this.n) return;
+    const k = this.k++;
+    this.pos[k * 3] = x; this.pos[k * 3 + 1] = y; this.pos[k * 3 + 2] = z; this.size[k] = s;
+    this.col[k * 4] = r; this.col[k * 4 + 1] = g; this.col[k * 4 + 2] = b; this.col[k * 4 + 3] = a;
+  }
+  end() {
+    this.geo.setDrawRange(0, this.k);
+    for (const a of ['position', 'aSize', 'aColor']) this.geo.attributes[a].needsUpdate = true;
+  }
+}
+
+// ---------- камера: [время, cx, cy, масштаб, поворот°, наклон°] ----------
+const CAM = [
+  [0.0, 1500, 960, 0.30, -16, -5],
+  [5.2, 1500, 960, 0.335, -7, -3],
+  [6.6, 600, 760, 1.12, 12, -14],    // пылающее солнце
+  [8.0, 600, 740, 1.2, 8, -15],
+  [9.4, 600, 1320, 1.02, -10, -4],   // ступенчатый зиккурат
+  [11.6, 600, 900, 0.92, -4, -20],   // ...уходящий в самое небо
+  [12.7, 1420, 1010, 0.95, -18, -4], // жрица
+  [15.6, 1380, 930, 1.2, -9, -6],
+  [16.9, 1480, 1050, 1.42, 15, 2],   // весло-мешалка
+  [19.1, 1500, 1080, 1.5, 9, 4],
+  [20.4, 1620, 1380, 1.38, -12, 12], // глиняный чан
+  [22.5, 1620, 1370, 1.46, -4, 14],
+  [23.7, 1540, 1060, 1.0, 4, -6],    // магия
+  [24.7, 1540, 1040, 0.98, 7, -7],
+  [25.8, 1620, 1320, 1.58, 14, 10],  // брожение
+  [27.2, 1620, 1300, 1.66, 8, 12],
+  [28.7, 1470, 780, 1.08, -6, -18],  // божественное чудо
+  [30.3, 1460, 740, 1.12, -2, -20],
+  [31.8, 2400, 1080, 0.95, -16, -3], // пирующие
+  [33.2, 2400, 1080, 1.02, -9, -3],
+  [34.7, 2400, 1070, 1.32, 4, 2],    // трубки
+  [36.8, 2400, 1090, 1.38, 12, 3],
+  [38.0, 2140, 1010, 1.6, -18, -4],  // царь
+  [39.0, 2150, 1010, 1.64, -14, -4],
+  [39.8, 2660, 1010, 1.64, 14, -4],  // слуга
+  [40.4, 2650, 1010, 1.6, 17, -4],
+  [42.5, 2400, 935, 1.0, 5, -5],     // великий уравнитель
+  [46.3, 2400, 935, 1.06, -5, -4],
+  [47.4, 2400, 1300, 1.34, -8, 9],   // один сосуд
+  [48.2, 2400, 1310, 1.36, -4, 10],
+  [49.2, 2400, 1700, 1.14, 6, 16],   // сложенное оружие
+  [49.9, 2400, 1705, 1.15, 8, 16],
+  [52.0, 1500, 960, 0.31, 9, -4],    // дар небес — общий план
+  [55.4, 1500, 960, 0.34, 3, -3],
+  [60, 1500, 960, 0.37, -3, -2],
+];
+function camAt(t) {
+  let i = 0;
+  while (i < CAM.length - 2 && t >= CAM[i + 1][0]) i++;
+  const a = CAM[i], b = CAM[i + 1], k = ease((t - a[0]) / (b[0] - a[0]));
+  return [lerp(a[1], b[1], k), lerp(a[2], b[2], k), Math.exp(lerp(Math.log(a[3]), Math.log(b[3]), k)), lerp(a[4], b[4], k), lerp(a[5], b[5], k)];
+}
+
+const CAPS = [
+  [0.0, 1.95, 'Взгляните на этот рельеф.'], [2.5, 5.0, 'Перед нами — утро человечества.'], [5.5, 6.45, 'Междуречье.'],
+  [6.66, 7.95, 'Пылающее солнце'], [7.95, 9.72, 'и ступенчатый зиккурат,'], [9.78, 11.65, 'уходящий в самое небо.'],
+  [12.0, 13.88, 'Жрица великой богини Нинкаси'], [13.88, 15.62, 'совершает священнодействие.'], [15.84, 17.0, 'В её руках —'],
+  [17.26, 19.12, 'простое деревянное весло-мешалка,'], [19.28, 20.95, 'но в глиняном чане кипит'], [20.95, 22.46, 'не просто зерно с водой —'],
+  [22.7, 24.6, 'там рождается магия.'], [24.64, 27.18, 'Древние шумеры не знали химии брожения —'], [27.34, 28.82, 'для них это было явлением'],
+  [28.82, 30.24, 'божественного чуда.'], [30.62, 31.64, 'Обратите внимание:'], [31.94, 33.04, 'люди пьют напиток'],
+  [33.04, 35.18, 'через длинные тростниковые трубки'], [35.18, 36.68, 'из единого сосуда.'], [37.08, 39.84, 'В этом жесте нет деления на царей и слуг.'],
+  [40.16, 42.52, 'Пиво с первого дня своего существования'], [42.52, 44.44, 'стало великим уравнителем,'], [44.6, 46.18, 'знаком мира и доверия.'],
+  [46.6, 48.12, 'Разделив один сосуд,'], [48.36, 49.7, 'люди складывали оружие.'], [49.7, 52.24, 'Это был священный дар небес,'],
+  [52.42, 54.82, 'дарующий радость усталому сердцу.'],
+];
+(() => {
+  const p = [];
+  for (let i = 0; i < 16; i++) { const a = i * Math.PI / 8 - Math.PI / 2, r = i % 2 ? 32 : 92; p.push((Math.cos(a) * r).toFixed(1) + ',' + (Math.sin(a) * r).toFixed(1)); }
+  $('estar').setAttribute('points', p.join(' '));
+})();
+
+async function build() {
+  const [albedo, normal, wAlb, wNor, fAlb, fNor, hImg] = await Promise.all([
+    tex('/build/r_albedo.jpg', true), tex('/build/r_normal.png', false),
+    tex('/build/w_albedo.jpg', true, [3.2, 2.4]), tex('/build/w_normal.png', false, [3.2, 2.4]),
+    tex('/build/w_albedo.jpg', true, [3, 2]), tex('/build/w_normal.png', false, [3, 2]),
+    img('/build/r_height.png'),
+  ]);
+
+  // ---- плита с рельефом: реальная геометрия по карте высот ----
+  const SX = Number(Q.get('seg') || 1000), SY = Math.round(SX * 0.64);
+  const geo = new THREE.PlaneGeometry(30, 19.2, SX, SY);
+  const cv = document.createElement('canvas'); cv.width = SX + 1; cv.height = SY + 1;
+  const cx = cv.getContext('2d', { willReadFrequently: true });
+  cx.drawImage(hImg, 0, 0, SX + 1, SY + 1);
+  const hd = cx.getImageData(0, 0, SX + 1, SY + 1).data;
+  const pos = geo.attributes.position;
+  for (let i = 0; i < pos.count; i++) pos.setZ(i, -0.25 + (hd[i * 4] / 255) * 1.0);
+  const slabMat = new THREE.MeshStandardMaterial({ map: albedo, normalMap: normal, normalScale: new THREE.Vector2(1.15, 1.15), roughness: 0.86, metalness: 0.0, color: 0xe9e2da });
+  const slab = new THREE.Mesh(geo, slabMat);
+  slab.castShadow = true; slab.receiveShadow = true; scene.add(slab);
+  const edgeMat = new THREE.MeshStandardMaterial({ color: 0x9a7d55, roughness: 0.9, normalMap: wNor.clone() });
+  const back = new THREE.Mesh(new THREE.BoxGeometry(30.5, 19.7, 1.5), edgeMat);
+  back.position.z = -0.85; back.castShadow = true; back.receiveShadow = true; scene.add(back);
+
+  // ---- стена, пол ----
+  const wall = new THREE.Mesh(new THREE.PlaneGeometry(220, 150), new THREE.MeshStandardMaterial({ map: wAlb, normalMap: wNor, roughness: 0.94 }));
+  wall.position.set(0, 10, -1.6); wall.receiveShadow = true; scene.add(wall);
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(220, 90), new THREE.MeshStandardMaterial({ map: fAlb, normalMap: fNor, roughness: 0.55, metalness: 0.05, color: 0x8a7866 }));
+  floor.rotation.x = -Math.PI / 2; floor.position.set(0, -17, 43); floor.receiveShadow = true; scene.add(floor);
+  // цоколь под плитой
+  const plinth = new THREE.Mesh(new THREE.BoxGeometry(34, 7.2, 3.2), new THREE.MeshStandardMaterial({ map: wAlb.clone(), normalMap: wNor.clone(), roughness: 0.92, color: 0xb09a7c }));
+  plinth.position.set(0, -13.45, 0); plinth.receiveShadow = true; plinth.castShadow = true; scene.add(plinth);
+
+  // ---- жаровни ----
+  const bronze = new THREE.MeshStandardMaterial({ color: 0x4a3418, roughness: 0.42, metalness: 0.85 });
+  const BR = [new THREE.Vector3(-12.2, -11.9, 5.2), new THREE.Vector3(12.2, -11.9, 5.2)];
+  const brLights = [];
+  for (const p of BR) {
+    const stand = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.5, 4.2, 20), bronze); stand.position.set(p.x, -14.9, p.z); scene.add(stand);
+    const foot = new THREE.Mesh(new THREE.CylinderGeometry(0.95, 1.15, 0.3, 28), bronze); foot.position.set(p.x, -16.85, p.z); scene.add(foot);
+    const pts = []; for (let i = 0; i <= 14; i++) { const a = (i / 14) * Math.PI * 0.5; pts.push(new THREE.Vector2(0.15 + Math.sin(a) * 1.45, -Math.cos(a) * 0.95)); }
+    pts.push(new THREE.Vector2(1.72, 0.06), new THREE.Vector2(1.6, 0.16), new THREE.Vector2(1.4, 0.06));
+    const bowlMat = bronze.clone(); bowlMat.side = THREE.DoubleSide;
+    const bowl = new THREE.Mesh(new THREE.LatheGeometry(pts, 40), bowlMat); bowl.position.set(p.x, -12.2, p.z); scene.add(bowl);
+    const coal = new THREE.Mesh(new THREE.CylinderGeometry(1.36, 1.2, 0.2, 28), new THREE.MeshBasicMaterial({ color: 0xb8300a })); coal.position.set(p.x, -12.28, p.z); scene.add(coal);
+    const L = new THREE.PointLight(0xff9450, 1, 0, 1.0); L.position.set(p.x, p.y + 0.6, p.z + 0.4); scene.add(L); brLights.push(L);
+  }
+
+  // ---- основной свет (с тенями) ----
+  const key = new THREE.SpotLight(0xfff0dc, 3.2, 0, 0.62, 0.75, 0);
+  key.position.set(-26, 24, 19); key.target.position.set(0, -1, 0);
+  key.castShadow = true; key.shadow.mapSize.set(Number(Q.get('sm') || 4096), Number(Q.get('sm') || 4096));
+  key.shadow.camera.near = 18; key.shadow.camera.far = 70; key.shadow.bias = -0.0012; key.shadow.normalBias = 0.0; key.shadow.radius = 2.2;
+  scene.add(key, key.target);
+  const hemi = new THREE.HemisphereLight(0x8a6c50, 0x1c120a, 0.34); scene.add(hemi);
+
+  // ---- «волшебный» свет ----
+  const mk = (c, p) => { const l = new THREE.PointLight(c, 0, 0, 1.0); l.position.copy(p); scene.add(l); return l; };
+  const sunL = mk(0xffa040, PX(600, 500, 2.6));
+  const vatL = mk(0xffb04a, PX(1620, 1230, 2.0));
+  const starL = mk(0xffe0a0, PX(1290, 470, 2.2));
+  const vesL = mk(0xffb050, PX(2400, 1110, 1.8));
+  const skyL = mk(0xffcf80, new THREE.Vector3(0, 14, 9));
+
+  const glow = (map, p, size, color) => {
+    const m = new THREE.Mesh(new THREE.PlaneGeometry(size, size), new THREE.MeshBasicMaterial({ map, color, blending: THREE.AdditiveBlending, transparent: true, depthWrite: false, opacity: 0 }));
+    m.position.copy(p); scene.add(m); return m;
+  };
+  const sunG = glow(DOT, PX(600, 500, 0.9), 9, 0xffa24a);
+  const sunR = glow(raysTexture(16, 16), PX(600, 500, 0.75), 17, 0xffb060);
+  const starG = glow(DOT, PX(1290, 470, 0.9), 6, 0xffe2b0);
+  const starR = glow(raysTexture(16, 11), PX(1290, 470, 0.8), 13, 0xffdca0);
+  const vatG = glow(DOT, PX(1620, 1262, 0.95), 7, 0xffb050);
+  const vesG = glow(DOT, PX(2400, 1130, 0.95), 5.5, 0xffb050);
+  const haloL = glow(DOT, PX(2066, 960, 0.9), 5.2, 0xffc878), haloR = glow(DOT, PX(2734, 960, 0.9), 5.2, 0xffc878);
+
+  // ---- золото в тростниковых трубках ----
+  const strawMat = new THREE.MeshBasicMaterial({ color: 0xffc860, blending: THREE.AdditiveBlending, transparent: true, depthWrite: false, opacity: 0 });
+  const straws = [[2372, 1150, 2126, 982], [2428, 1150, 2674, 982]].map(([x1, y1, x2, y2]) => {
+    const a = PX(x1, y1, 0.66), b = PX(x2, y2, 0.66), len = a.distanceTo(b);
+    const g = new THREE.CylinderGeometry(0.042, 0.042, len, 10); g.translate(0, len / 2, 0);
+    const m = new THREE.Mesh(g, strawMat); m.position.copy(a);
+    m.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), b.clone().sub(a).normalize()); scene.add(m); return m;
+  });
+
+  const fire = new Particles(260), sparks = new Particles(520), dust = new Particles(140);
+
+  // ---- пост-обработка ----
+  let composer = null, bloom = null;
+  if (Q.get('bloom') !== '0') {
+    composer = new EffectComposer(renderer);
+    composer.setPixelRatio(1); composer.setSize(W, H);
+    composer.addPass(new RenderPass(scene, camera));
+    bloom = new UnrealBloomPass(new THREE.Vector2(W / 2, H / 2), 0.32, 0.7, 0.93);
+    composer.addPass(bloom); composer.addPass(new OutputPass());
+  }
+
+  const tgt = new THREE.Vector3();
+  window.setFrame = (f) => {
+    const t = f / FPS;
+    const fl = (k) => 1 + 0.10 * Math.sin(t * 9.1 + k * 1.7) + 0.07 * Math.sin(t * 15.7 + k * 2.3) + 0.05 * Math.sin(t * 23.3 + k) + 0.04 * Math.sin(t * 4.3 + k * 3.1);
+    const flick = 1 + 0.03 * Math.sin(t * 7.3) + 0.02 * Math.sin(t * 13.1 + 1.3);
+
+    // камера
+    const [cx_, cy_, s, yaw0, pit0] = camAt(t);
+    const yaw = (yaw0 + 0.5 * Math.sin(t * 0.7) + 0.25 * Math.sin(t * 1.9 + 1)) * Math.PI / 180;
+    const pit = (pit0 + 0.35 * Math.sin(t * 0.9 + 2)) * Math.PI / 180;
+    const d = (19.2 / s) / 2 / Math.tan((FOV * Math.PI) / 360);
+    tgt.copy(PX(cx_, cy_, 0.2));
+    camera.position.set(tgt.x + d * Math.sin(yaw) * Math.cos(pit), tgt.y + d * Math.sin(pit), tgt.z + d * Math.cos(yaw) * Math.cos(pit));
+    camera.lookAt(tgt);
+
+    const finale = win(t, 49.9, 56.4, 1.6, 1.4);
+    const intro = ease(t / 2.6);
+
+    // огонь жаровен
+    brLights[0].intensity = 8.5 * fl(0) * (0.25 + 0.75 * intro);
+    brLights[1].intensity = 8.5 * fl(5) * (0.25 + 0.75 * intro);
+    key.intensity = (2.0 + 1.0 * finale) * intro * flick;
+    hemi.intensity = 0.22 + 0.16 * finale;
+
+    const sun = Math.max(0.10, win(t, 6.2, 9.2, 0.7, 1.4), 0.85 * finale);
+    sunL.intensity = 6.5 * sun * flick; sunG.material.opacity = 0.42 * sun; sunR.material.opacity = 0.30 * Math.max(win(t, 6.4, 9.4, 0.8, 1.4), 0.9 * finale); sunR.rotation.z = t * 0.06;
+    const magic = win(t, 22.6, 25.2, 0.5, 0.9);
+    const vat = Math.max(0.10 * clamp((t - 11) / 2), 0.55 * win(t, 19.2, 22.8, 0.8, 0.4), magic, 0.75 * win(t, 24.8, 28.2, 0.4, 1.0), 0.6 * finale);
+    vatL.intensity = 6 * vat * fl(9); vatG.material.opacity = 0.4 * vat;
+    const miracle = Math.max(win(t, 27.6, 30.9, 0.9, 0.8), 0.7 * finale, 0.3 * magic);
+    starL.intensity = 5 * miracle * flick; starG.material.opacity = 0.5 * miracle; starR.material.opacity = 0.34 * miracle; starR.rotation.z = -t * 0.08;
+    const vessel = Math.max(0.7 * win(t, 34.9, 37.4, 0.6, 0.8), 0.45 * win(t, 40.5, 46.4, 1.2, 0.6), 0.8 * win(t, 46.4, 48.6, 0.5, 0.5), 0.6 * finale);
+    vesL.intensity = 4.5 * vessel * fl(3); vesG.material.opacity = 0.36 * vessel;
+    const halo = Math.max(win(t, 42.6, 46.4, 0.7, 0.6) * 0.6, win(t, 37.9, 40.5, 0.5, 0.5) * 0.3);
+    haloL.material.opacity = halo; haloR.material.opacity = halo;
+    skyL.intensity = 9 * finale;
+    const flow = ease((t - 33.0) / 1.9);
+    const strawA = clamp((t - 32.9) / 0.3) * (t < 46.4 ? 1 : Math.max(0, 1 - (t - 46.4))) * (0.82 + 0.18 * Math.sin(t * 5));
+    strawMat.opacity = Math.max(strawA, finale * 0.8) * 0.9;
+    for (const m of straws) m.scale.y = t > 49 ? 1 : Math.max(0.001, flow);
+
+    // пламя
+    fire.begin();
+    BR.forEach((p, b) => {
+      for (let i = 0; i < 110; i++) {
+        const j = i + b * 200;
+        const q = (t * (0.85 + 0.75 * hash(j, 1)) + hash(j, 2)) % 1;
+        const sp = 1 - q * 0.8;
+        const x = p.x + (hash(j, 3) - 0.5) * 2.0 * sp + Math.sin(q * 9 + hash(j, 4) * 6.28 + t * 2) * 0.16;
+        const z = p.z + (hash(j, 6) - 0.5) * 2.0 * sp;
+        const y = p.y - 0.35 + q * (3.2 + 2.6 * hash(j, 5));
+        const a = Math.pow(1 - q, 1.3) * Math.min(1, q * 9) * 0.26 * intro;
+        fire.add(x, y, z, (1.7 - q * 1.1), 1.0, lerp(0.74, 0.22, q), lerp(0.30, 0.03, q), a);
+      }
+      for (let i = 0; i < 14; i++) { // угольки
+        const j = i + b * 50 + 900;
+        const q = (t * (0.12 + 0.12 * hash(j, 1)) + hash(j, 2)) % 1;
+        fire.add(p.x + (hash(j, 3) - 0.5) * 1.4 + Math.sin(q * 11 + j) * 0.5, p.y + 1 + q * 7.5, p.z + (hash(j, 4) - 0.5) * 1.4, 0.13, 1, 0.55, 0.15, Math.sin(Math.PI * q) * 0.9 * intro);
+      }
+    });
+    fire.end();
+
+    // искры и пар
+    sparks.begin();
+    const vatS = Math.max(0.35 * win(t, 19.4, 22.8, 1, 0.4), magic, 0.8 * win(t, 24.9, 30.6, 0.3, 1.2), 0.7 * finale);
+    if (vatS > 0.01) for (let i = 0; i < 110; i++) {
+      const q = (t * (0.16 + 0.16 * hash(i, 1)) + hash(i, 2)) % 1;
+      const x = 1620 + (hash(i, 3) - 0.5) * 300 + Math.sin(q * 7 + hash(i, 4) * 6.28) * (30 + 60 * q), y = 1262 - q * (520 + 420 * hash(i, 5));
+      const v = PX(x, y, 0.75 + hash(i, 8) * 2.6 + q * 0.8);
+      sparks.add(v.x, v.y, v.z, 0.16 + 0.26 * hash(i, 6), 1, 0.74, 0.36, Math.sin(Math.PI * q) * vatS * (0.5 + 0.5 * hash(i, 7)));
+    }
+    const boil = Math.max(win(t, 11.5, 31, 1.5, 1.5) * 0.55, win(t, 19.2, 28.4, 0.6, 0.8), 0.5 * finale);
+    if (boil > 0.01) for (let i = 0; i < 46; i++) { // пар над чаном
+      const q = (t * (0.10 + 0.08 * hash(i, 11)) + hash(i, 12)) % 1;
+      const v = PX(1500 + hash(i, 13) * 250 + Math.sin(q * 5 + i) * 50, 1250 - q * 620, 0.9 + hash(i, 14) * 1.2 + q * 1.4);
+      sparks.add(v.x, v.y, v.z, 1.0 + 2.2 * q, 0.9, 0.82, 0.68, Math.sin(Math.PI * q) * 0.07 * boil);
+    }
+    const vs = Math.max(0.6 * win(t, 34.8, 37.2, 0.6, 0.8), 0.7 * win(t, 42.6, 48.4, 0.8, 0.6), 0.6 * finale);
+    if (vs > 0.01) for (let i = 0; i < 60; i++) {
+      const q = (t * (0.14 + 0.14 * hash(i, 21)) + hash(i, 22)) % 1;
+      const v = PX(2400 + (hash(i, 23) - 0.5) * 130 + Math.sin(q * 6 + hash(i, 24) * 6.28) * (20 + 90 * q), 1130 - q * (380 + 360 * hash(i, 25)), 0.8 + hash(i, 28) * 2.2);
+      sparks.add(v.x, v.y, v.z, 0.15 + 0.22 * hash(i, 26), 1, 0.74, 0.36, Math.sin(Math.PI * q) * vs * (0.5 + 0.5 * hash(i, 27)));
+    }
+    if (finale > 0.01) for (let i = 0; i < 240; i++) {
+      const q = (t * (0.05 + 0.07 * hash(i, 31)) + hash(i, 32)) % 1;
+      const v = PX(60 + hash(i, 33) * 2880 + Math.sin(q * 5 + i) * 40, 1750 - q * 1600, 0.8 + hash(i, 36) * 7);
+      sparks.add(v.x, v.y, v.z, 0.22 + 0.34 * hash(i, 34), 1, 0.76, 0.38, Math.sin(Math.PI * q) * finale * (0.35 + 0.5 * hash(i, 35)));
+    }
+    sparks.end();
+
+    // пылинки в воздухе между камерой и плитой
+    dust.begin();
+    for (let i = 0; i < 140; i++) {
+      const k = 0.12 + 0.8 * hash(i, 41);            // доля пути от цели к камере
+      const spread = d * 0.42 * (1 - k * 0.6);
+      const x = lerp(tgt.x, camera.position.x, k) + ((hash(i, 42) + t * 0.012 * (hash(i, 45) - 0.3)) % 1 - 0.5) * spread;
+      const y = lerp(tgt.y, camera.position.y, k) + (((hash(i, 43) + t * 0.01 * (0.4 + hash(i, 46))) % 1) - 0.5) * spread * 2.2;
+      const z = lerp(tgt.z, camera.position.z, k);
+      dust.add(x, y, z, d * 0.0045 * (0.6 + hash(i, 44)), 1, 0.85, 0.62, (0.10 + 0.22 * hash(i, 47)) * (0.6 + 0.4 * Math.sin(t * (0.6 + hash(i, 48)) + i * 2.1)));
+    }
+    dust.end();
+
+    if (composer) composer.render(); else renderer.render(scene, camera);
+
+    // ---- подписи ----
+    const wide = Math.max(win(t, 0.5, 5.5, 1.0, 0.5), win(t, 51.8, 54.9, 0.7, 0.4));
+    $('title').style.opacity = wide;
+    $('title').style.transform = `translateY(${((1 - ease(clamp((t - 0.5) / 1.4))) * 22).toFixed(2)}px)`;
+    const bigW = win(t, 42.2, 46.5, 0.4, 0.4);
+    $('label').style.opacity = win(t, 6.3, 51.0, 0.6, 0.6) * (1 - bigW);
+    $('topGrad').style.opacity = 0.3 + 0.7 * Math.max(wide, bigW);
+    $('big').style.opacity = win(t, 42.7, 46.3, 0.45, 0.4);
+    $('big').firstElementChild.style.letterSpacing = (0.05 + 0.03 * clamp((t - 42.7) / 3.6)).toFixed(4) + 'em';
+    $('big').lastElementChild.style.opacity = clamp((t - 44.55) / 0.4);
+    let txt = '', a = 0, rise = 0;
+    for (const [st, en, tx] of CAPS) if (t >= st - 0.04 && t < en + 0.12) { txt = tx; a = clamp((t - st + 0.04) / 0.16) * clamp((en + 0.12 - t) / 0.12); rise = (1 - clamp((t - st + 0.04) / 0.22)) * 10; break; }
+    const cap = $('cap'); if (cap.textContent !== txt) cap.textContent = txt;
+    cap.style.opacity = a; cap.style.transform = `translateY(${rise.toFixed(2)}px)`;
+    const endA = clamp((t - 54.75) / 0.6), end = $('end');
+    end.style.opacity = endA; end.style.visibility = endA > 0 ? 'visible' : 'hidden';
+    $('botGrad').style.opacity = 1 - 0.6 * endA;
+    if (endA > 0) {
+      const k1 = ease((t - 54.95) / 0.8), k2 = ease((t - 56.25) / 0.8);
+      const t1 = end.querySelector('.t1'), t2 = end.querySelector('.t2'), rule = end.querySelector('.rule'), sv = end.querySelector('svg');
+      t1.style.opacity = k1; t1.style.transform = `translateY(${((1 - k1) * 26).toFixed(2)}px) scale(${(0.96 + 0.04 * k1 + 0.012 * clamp((t - 55) / 4.5)).toFixed(4)})`;
+      sv.style.opacity = k1; sv.style.transform = `rotate(${((t - 55) * 5).toFixed(3)}deg) scale(${(0.8 + 0.2 * k1).toFixed(4)})`;
+      rule.style.transform = `scaleX(${ease((t - 55.5) / 0.9).toFixed(4)})`;
+      t2.style.opacity = k2; t2.style.transform = `translateY(${((1 - k2) * 18).toFixed(2)}px)`;
+    }
+    $('black').style.opacity = Math.max(1 - ease(t / 1.9), clamp((t - (DUR - 0.6)) / 0.55));
+    return renderer.info.render.triangles;
+  };
+  await document.fonts.ready;
+  await Promise.all(['600 40px CG', '700 40px CG', 'italic 600 40px CG', 'italic 500 40px CG', '600 40px CSC', '700 40px CSC'].map((f) => document.fonts.load(f, 'АБВ абв')));
+  setFrame(0);
+  return true;
+}
+window.ready = build();
+</script>
+</body>
+</html>
